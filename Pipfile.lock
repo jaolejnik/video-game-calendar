@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4d402970a8d7013d7d7d2eae80dc7abcda64c6fa8914ad26d44520f56ecc55aa"
+            "sha256": "de9e75e03b260d39087a401f5ecd1794bf32ad62119d15d46438b3c44194acbb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -93,20 +93,12 @@
             "index": "pypi",
             "version": "==3.5"
         },
-        "pytz": {
-            "hashes": [
-                "sha256:16962c5fb8db4a8f63a26646d8886e9d769b6c511543557bc84e9569fb9a9cb4",
-                "sha256:180befebb1927b16f6b57101720075a984c019ac16b1b7575673bea42c6c3da5"
-            ],
-            "index": "pypi",
-            "version": "==2020.5"
-        },
         "requests": {
             "hashes": [
                 "sha256:27973dd4a904a4f13b263a19c866c13b92a39ed1c964655f025f3f8d3d75b804",
                 "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "index": "pypi",
             "version": "==2.25.1"
         },
         "requests-oauthlib": {

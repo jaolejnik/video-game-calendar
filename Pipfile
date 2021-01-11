@@ -13,5 +13,5 @@ python_version = "3.9"
 
 [packages]
 igdb-api-v4 = "*"
-pytz = "*"
 python-twitter = "*"
+requests = "*"
