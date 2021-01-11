@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "==20.8b1"
+flake8 = "*"
+isort = "*"
+
+[requires]
+python_version = "3.9"
+
+[packages]
+igdb-api-v4 = "*"
+pytz = "*"
+python-twitter = "*"
