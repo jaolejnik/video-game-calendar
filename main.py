@@ -58,13 +58,11 @@ def count_games_under_char_limit(games_list, extra_chars=0):
 
     for game in games_list:
         char_count += len(
-            f"({datetime.fromtimestamp(game['first_release_date']).year}) {game['name']}"
+            f"({datetime.fromtimestamp(game['first_release_date']).year}) {game['name']}\n"
         )
         if char_count >= TWITTER_CHAR_LIMIT - extra_chars:
             break
         games_count += 1
-
-    print("Games char count:", char_count)
 
     return games_count
 
@@ -81,6 +79,7 @@ def create_tweet_message(games_list):
     else:
         message += "No game has ever been released on this day."
 
+    print("Total char count:", len(message))
     return message
 
 
