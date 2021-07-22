@@ -33,6 +33,7 @@ class AnotherIGDBWrapper:
     def __get_date_range(min_date, max_date):
         date_range = []
         date = min_date
+
         while date < max_date:
             date_range.append(
                 datetime(
@@ -100,7 +101,7 @@ class AnotherIGDBWrapper:
         start_date = datetime(now.year, now.month, 1, 0, 0, tzinfo=timezone.utc)
         days_forward = monthrange(now.year, now.month)[1]
 
-        return self.get_upcoming_game_releases(start_date, days_forward)
+        return self.get_upcoming_game_releases(start_date, days_forward - 1)
 
     def download_game_cover(self, game_id):
         cover_byte_array = self.wrapper.api_request(
