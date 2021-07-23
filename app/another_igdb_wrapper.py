@@ -1,18 +1,16 @@
 import os
 from calendar import monthrange
 from datetime import datetime, timedelta, timezone
+from functools import wraps
 
 import requests
 from igdb.wrapper import IGDBWrapper
 
 
 def only_significant_games(func):
+    @wraps(func)
     def wrapper(*args):
-        return [
-            dict((key, value) for key, value in game.items())
-            for game in func(*args)
-            if "follows" in game.keys()
-        ]
+        return [game for game in func(*args) if "follows" and "hypes" in game.keys()]
 
     return wrapper
 
@@ -57,25 +55,26 @@ class AnotherIGDBWrapper:
         return date_range  # list of floats
 
     @staticmethod
-    def __create_date_query_string(dates):
+    def __create_date_query_string(dates, only_first=False):
         dates_str_list = [str(int(x)) for x in dates]
-        filter_string = " | ".join([f"first_release_date={d}" for d in dates_str_list])
+        release_date_key = "first_release_date" if only_first else "release_dates.date"
+        filter_string = " | ".join([f"{release_date_key}={d}" for d in dates_str_list])
 
         return filter_string
 
     def get_games(self, filter_string):
         game_byte_array = self.wrapper.api_request(
             "games",
-            f"fields id, name, aggregated_rating, follows, first_release_date; where {filter_string}; sort follows desc; limit 500;",
+            f"fields id, name, aggregated_rating, follows, hypes, release_dates.date, release_dates.platform.abbreviation, first_release_date, cover.url; where {filter_string}; sort follows desc; limit 500;",
         )
         return eval(game_byte_array)
 
-    @only_significant_games
     def get_games_released_on(self, date):
         dates = self.__get_date_year_range(1970, date.year, date.month, date.day)
         filter_queries = [
-            "aggregated_rating > 60",
-            self.__create_date_query_string(dates),
+            "follows != null",
+            "version_parent = null",
+            f"({self.__create_date_query_string(dates, only_first=True)})",
         ]
         filter_string = " & ".join(filter_queries)
 
@@ -83,11 +82,25 @@ class AnotherIGDBWrapper:
 
     def get_games_released_in_range(self, min_date, max_date):
         dates = self.__get_date_range(min_date, max_date)
-        filter_string = self.__create_date_query_string(dates)
+        filter_queries = [
+            "follows != null",
+            "version_parent = null",
+            "release_dates.platform != (34,39,55,82)",
+            f"({self.__create_date_query_string(dates, only_first=True)})",
+        ]
+        filter_string = " & ".join(filter_queries)
+        games = self.get_games(filter_string)
 
-        return self.get_games(filter_string)
+        for game in games:
+            game["release_dates"] = list(
+                filter(
+                    lambda rd: "date" in rd.keys() and rd["date"] in dates,
+                    game["release_dates"],
+                )
+            )
 
-    @only_significant_games
+        return games
+
     def get_upcoming_game_releases(self, start_date, days_forward):
         return self.get_games_released_in_range(
             start_date, start_date + timedelta(days=days_forward)
@@ -103,12 +116,7 @@ class AnotherIGDBWrapper:
 
         return self.get_upcoming_game_releases(start_date, days_forward - 1)
 
-    def download_game_cover(self, game_id):
-        cover_byte_array = self.wrapper.api_request(
-            "covers",
-            f"fields url; where game = {game_id};",
-        )
-        url = eval(cover_byte_array)[0]["url"]
+    def download_game_cover(self, url):
         cover_url = url.lstrip("//").replace("t_thumb", "t_cover_big")
         os.system(f"wget {cover_url}")
         file_name = cover_url.split("/")[-1]
