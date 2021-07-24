@@ -1,17 +1,21 @@
+import logging
 from datetime import datetime
 
 TWITTER_CHAR_LIMIT = 280
 
 
 def sort_games_by_first_release_date(games, reverse=False):
+    logging.info("Sorting games by 'first release date'...")
     return sorted(games, reverse=reverse, key=lambda k: k["first_release_date"])
 
 
 def sort_games_by_release_date(games, reverse=False):
+    logging.info("Sorting games by 'release date'...")
     return sorted(games, reverse=reverse, key=lambda k: k["release_dates"][0]["date"])
 
 
 def count_games_under_char_limit(games, extra_chars_count, date_format):
+    logging.info("Counting games under Twitter char limit...")
     char_count = 0
     games_count = 0
 
@@ -27,6 +31,7 @@ def count_games_under_char_limit(games, extra_chars_count, date_format):
 
 
 def create_past_releases_message(games):
+    logging.info("Creating past releases message...")
     message = f"[{datetime.utcnow().strftime('%d.%m.%Y')}]\n"
 
     if len(games) == 0:
@@ -38,12 +43,12 @@ def create_past_releases_message(games):
 
     for game in sort_games_by_first_release_date(games[:games_count]):
         message += f"({datetime.fromtimestamp(game['first_release_date']).year}) {game['name']}\n"
-    print("Total char count:", len(message))
 
     return message
 
 
 def create_platform_tag_string(game_release_dates):
+    logging.info("Creating platform tag string...")
     platforms = [
         platform["platform"]["abbreviation"] for platform in game_release_dates
     ]
@@ -54,11 +59,12 @@ def create_platform_tag_string(game_release_dates):
 
 
 def create_upcoming_releases_message(games, week=False):
+    logging.info("Creating upcoming releases message...")
     if len(games) == 0:
         return ["I have not found any releases worth mentioning this week :("]
 
     base = (
-        f"Upcoming releases for this week of {datetime.utcnow().strftime('%B %Y')}\n\n"
+        f"Upcoming releases for this week of {datetime.utcnow().strftime('%B %Y')}:\n\n"
         if week
         else f"{datetime.utcnow().strftime('%B %Y')} upcoming releases:\n\n"
     )
@@ -85,15 +91,3 @@ def create_upcoming_releases_message(games, week=False):
             messages[i] += f"{i+1}/{len(messages)}"
 
     return messages
-
-
-if __name__ == "__main__":
-    import os
-
-    from another_igdb_wrapper import AnotherIGDBWrapper
-
-    igdb = AnotherIGDBWrapper(os.getenv("IGDB_ID"), os.getenv("IGDB_SECRET"))
-    test = igdb.get_this_month_releases()
-    # print(test)
-    # create_upcoming_releases_message(test)
-    print("\n".join(create_upcoming_releases_message(test, week=True)))
