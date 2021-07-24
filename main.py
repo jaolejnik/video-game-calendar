@@ -2,8 +2,7 @@ import logging
 import os
 from datetime import datetime
 
-from app.another_igdb_wrapper import AnotherIGDBWrapper
-from app.twitter_utils import create_upcoming_releases_message
+from app.vgc import VideoGameCalendar
 
 DATE_NOW = datetime.utcnow()
 
@@ -16,8 +15,17 @@ logging.basicConfig(
     ],
 )
 
-igdb = AnotherIGDBWrapper(os.getenv("IGDB_ID"), os.getenv("IGDB_SECRET"))
-test = igdb.get_this_week_releases()
-# print(test)
-# create_upcoming_releases_message(test)
-print("\n".join(create_upcoming_releases_message(test, week=True)))
+
+igdb_credentials = {
+    "client_id": os.environ["IGDB_ID"],
+    "client_secret": os.environ["IGDB_SECRET"],
+}
+twitter_credentials = {
+    "consumer_key": os.environ["TWITTER_KEY"],
+    "consumer_secret": os.environ["TWITTER_SECRET"],
+    "access_token_key": os.environ["TWITTER_ACESS_TOKEN"],
+    "access_token_secret": os.environ["TWITTER_SECRET_TOKEN"],
+}
+
+vgc = VideoGameCalendar(igdb_credentials, twitter_credentials)
+vgc.post_this_week_releases()

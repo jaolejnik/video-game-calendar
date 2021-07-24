@@ -44,6 +44,7 @@ def create_past_releases_message(games):
     for game in sort_games_by_first_release_date(games[:games_count]):
         message += f"({datetime.fromtimestamp(game['first_release_date']).year}) {game['name']}\n"
 
+    logging.info(f"Created a message with a total char count: {len(message)}")
     return message
 
 
@@ -90,4 +91,7 @@ def create_upcoming_releases_message(games, week=False):
         for i in range(len(messages)):
             messages[i] += f"{i+1}/{len(messages)}"
 
+    logging.info(
+        f"Created a total of {len(messages)} messages with the following char counts: {','.join([str(len(message)) for message in messages])}"
+    )
     return messages

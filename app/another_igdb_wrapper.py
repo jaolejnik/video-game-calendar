@@ -116,6 +116,10 @@ class AnotherIGDBWrapper:
             start_date, start_date + timedelta(days=days_forward)
         )
 
+    def get_todays_past_releases(self):
+        logging.info("Getting today's past releases...")
+        return self.get_games_released_on(datetime.utcnow())
+
     def get_this_week_releases(self):
         logging.info("Getting this week releases...")
         now = datetime.utcnow()
