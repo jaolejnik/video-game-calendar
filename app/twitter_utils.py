@@ -76,16 +76,14 @@ def create_upcoming_releases_message(games, week=False):
     replies_count = 0
 
     while releases:
-        if replies_count > len(messages) - 1:
+        game = releases.pop(0)
+        message = f"({datetime.fromtimestamp(game['release_dates'][0]['date']).strftime(date_format)}) {game['name']} {create_platform_tag_string(game['release_dates'])}\n"
+
+        if len(messages[replies_count] + message) > TWITTER_CHAR_LIMIT:
+            replies_count += 1
             messages.append("")
 
-        while releases and len(messages[replies_count]) < TWITTER_CHAR_LIMIT:
-            game = releases.pop(0)
-            messages[
-                replies_count
-            ] += f"({datetime.fromtimestamp(game['release_dates'][0]['date']).strftime(date_format)}) {game['name']} {create_platform_tag_string(game['release_dates'])}\n"
-
-        replies_count += 1
+        messages[replies_count] += message
 
     if len(messages) > 1:
         for i in range(len(messages)):
