@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from datetime import datetime
 
 from app.vgc import VideoGameCalendar
@@ -28,4 +29,10 @@ twitter_credentials = {
 }
 
 vgc = VideoGameCalendar(igdb_credentials, twitter_credentials)
-vgc.post_this_week_releases()
+
+if "weekly" == sys.argv[1]:
+    vgc.post_this_week_releases()
+elif "monthly" == sys.argv[1]:
+    vgc.post_this_month_releases()
+else:
+    vgc.post_past_releases()
