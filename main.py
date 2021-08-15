@@ -31,9 +31,9 @@ twitter_credentials = {
 vgc = VideoGameCalendar(igdb_credentials, twitter_credentials)
 vgc.post_past_releases()
 
-if DATE_NOW.weekday() == 0:
-    sleep(30 * 60)
-    vgc.post_this_week_releases()
-elif DATE_NOW.day == 1:
+if DATE_NOW.day == 1:
     sleep(60 * 60)
     vgc.post_this_month_releases()
+elif DATE_NOW.weekday() == 0:
+    sleep(60 * 60)
+    vgc.post_this_week_releases()
